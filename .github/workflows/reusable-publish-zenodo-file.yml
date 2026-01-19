@@ -151,7 +151,7 @@ jobs:
           fi
 
           account_deposits=$(get_account_deposits)
-          jq '.' <<< "$account_deposits" | echo
+          jq '.' <<< "$account_deposits"
           exit 0
           deposit_id=$(get_deposit_id_for_repo "$account_deposits")
 
