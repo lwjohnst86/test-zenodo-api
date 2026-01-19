@@ -125,6 +125,18 @@ jobs:
               "${ZENODO_API_URL}/${deposit_id}/actions/edit"
           }
 
+          update_deposit_metadata() {
+            local deposit_id=$1
+            local metadata_json=$2
+            curl \
+              --silent \
+              --request PUT \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              --header 'Content-Type: application/json'  \
+              --data "$metadata_json" \
+              "${ZENODO_API_URL}/${deposit_id}"
+          }
+
           get_deposit_files() {
             local deposit_id=$1
             curl \
@@ -143,6 +155,16 @@ jobs:
               "${ZENODO_API_URL}/${deposit_id}/files/${file_id}"
           }
 
+          publish_newversion_deposit() {
+            local deposit_id=$1
+            curl \
+              --silent \
+              --request POST \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              --header 'Content-Type: application/json'  \
+              "${ZENODO_API_URL}/${deposit_id}/actions/newversion"
+          }
+
           # Steps
 
           if [[ ! -f "$ZENODO_FILE" ]]; then
@@ -155,21 +177,49 @@ jobs:
 
           if [[ ! $deposit_id ]]; then
             echo "INFO: No deposit found for GitHub repository '${{ github.repository }}'. Creating a new deposit."
+
+            # Create a new (draft) deposit
             metadata=$(read_zenodo_json "$ZENODO_FILE") 
             draft_deposit=$(create_new_deposit "$metadata")
+
+            # Upload file to the new deposit
             file_url=$(get_deposit_file_url "$draft_deposit")
             uploaded_file=$(upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}")
+
+            # Publish the new deposit
             new_deposit_id=$(get_deposit_id "$draft_deposit")
             new_deposit=$(publish_deposit "$new_deposit_id")
             deposit_html=$(get_deposit_html "$new_deposit")
+
+            echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
+          elif [[ $(echo $deposit_id | wc -l) -eq 1 ]]; then
+            echo "INFO: Deposit found for GitHub repository '${{ github.repository }}' with deposit ID '$deposit_id'. Updating existing deposit."
+
+            # Update existing deposit's metadata
+            edit_response=$(edit_deposit "$deposit_id")
+            metadata=$(read_zenodo_json "$ZENODO_FILE") 
+            updated_deposit=$(update_deposit_metadata "$deposit_id" "$metadata")
+
+            # Update existing deposit's file(s) by deleting and re-uploading
+            file_list=$(get_deposit_files "$deposit_id")
+            echo $file_list
+            deleted_files=$(
+              for file in file_list; do
+                delete_deposit_file "$deposit_id" "$file_id"
+              done
+            )
+            file_url=$(get_deposit_file_url "$edit_response")
+            echo $file_url
+            uploaded_file=$(upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}")
+            echo $uploaded_file
+
+            # Publish new version of the deposit
+            newversion_deposit=$(publish_newversion_deposit "$deposit_id")
+            echo $newversion_deposit
+            deposit_html=$(get_deposit_html "$newversion_deposit")
+            echo $deposit_html
             echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
           elif [[ $(echo $deposit_id | wc -l) -ne 1 ]]; then
             echo "ERROR: More than one deposit is found for the repository ${{ github.repository }}. One might be a draft. Please delete any duplicates."
-          elif [[ $(echo $deposit_id | wc -l) -eq 1 ]]; then
-            echo "INFO: Deposit found for GitHub repository '${{ github.repository }}' with deposit ID '$deposit_id'. Updating existing deposit."
-            edit_response=$(edit_deposit "$deposit_id")
-            echo ${edit_response}
-            file_list=$(get_deposit_files "$deposit_id")
-            echo ${file_list}
           fi
 
