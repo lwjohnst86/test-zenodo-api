@@ -153,7 +153,7 @@ jobs:
           account_deposits=$(get_account_deposits)
           echo $REPO_URL
           jq '.[].metadata.related_identifiers' <<< "$account_deposits"
-          jq --arg repo "$REPO_URL" '.[] | select(.metadata.related_identifiers[]?.identifier | contains($repo))' >>> "$account_deposits"
+          jq --arg repo "${{ github.repository }}" '.[] | select(.metadata.related_identifiers[]?.identifier | contains($repo))' <<< "$account_deposits"
           deposit_id=$(get_deposit_id_for_repo "$account_deposits")
           echo "$deposit_id"
           exit 0
