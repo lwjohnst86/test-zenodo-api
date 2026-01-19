@@ -130,9 +130,8 @@ jobs:
             file_url=$(get_deposit_file_url "$draft_deposit")
             upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}"
             new_deposit_id=$(get_deposit_id "$draft_deposit")
-            # publish_deposit "$new_deposit_id"
-            echo "$draft_deposit"
-            #deposit_html=$(get_deposit_html "$draft_deposit")
+            # new_deposit=$(publish_deposit "$new_deposit_id")
+            # deposit_html=$(get_deposit_html "$new_deposit")
             #echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
           elif [[ $(echo $deposit_id | wc -l) -ne 1 ]]; then
             echo "ERROR: More than one deposit is found for the repository ${{ github.repository }}. One might be a draft. Please delete any duplicates."
