@@ -150,7 +150,10 @@ jobs:
             exit 1
           fi
 
-          deposit_id=$(get_deposit_id_for_repo "$(get_account_deposits)")
+          account_deposits=$(get_account_deposits)
+          jq '.' <<< "$account_deposits" | echo
+          exit 0
+          deposit_id=$(get_deposit_id_for_repo "$account_deposits")
 
           if [[ ! $deposit_id ]]; then
             echo "INFO: No deposit found for GitHub repository '${{ github.repository }}'. Creating a new deposit."
