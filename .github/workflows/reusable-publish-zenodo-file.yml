@@ -50,11 +50,13 @@ jobs:
               $ZENODO_API_URL
           }
 
+          # One arg: JSON array of deposits
           get_deposit_id_for_repo() {
             echo $1 | \
               jq --arg repo "${REPO_URL}" \
               '.[] | select(.metadata.related_identifiers[]?.identifier | contains($repo)).id'
           }
 
-          echo $(get_account_deposits | get_deposit_id_for_repo)
+          account_deposits=$(get_account_deposits)
+          echo $(get_deposit_id_for_repo $account_deposits)
 
