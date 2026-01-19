@@ -52,7 +52,7 @@ jobs:
 
           # One arg: JSON array of deposits
           get_deposit_id_for_repo() {
-            echo ${1}
+            echo "${1}"
           }
 
           account_deposits=$(get_account_deposits)
