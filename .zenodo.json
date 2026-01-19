@@ -21,7 +21,7 @@
   "access_right": "open",
   "related_identifiers": [
     {
-      "identifier": "https://github.com/onlimit-study/dmp",
+      "identifier": "https://github.com/lwjohnst86/test-zenodo-api",
       "relation": "isIdenticalTo",
       "resource_type": "other"
     }
