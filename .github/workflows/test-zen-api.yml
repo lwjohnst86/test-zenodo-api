@@ -13,6 +13,6 @@ jobs:
     # uses: ./.github/workflows/reusable-publish-zenodo-file.yml@main
     uses: ./.github/workflows/reusable-publish-zenodo-file.yml
     with:
-      use_sandbox: true
+      use_sandbox: false
     secrets:
       zenodo-token: ${{ secrets.ZENODO_SANDBOX_TOKEN }}
