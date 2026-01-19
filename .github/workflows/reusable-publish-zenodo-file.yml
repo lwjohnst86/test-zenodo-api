@@ -58,9 +58,23 @@ jobs:
               <<< "$1"
           }
 
+          read_zenodo_json() {
+            echo "{\"metadata\": $(cat $1 | jq -c)}"
+          }
+
+          if [[ ! -f ".zenodo.json" ]]; then
+            echo "The repository doesn't have a '.zenodo.json'. To publish to Zenodo, it needs one."
+            # exit 1
+          fi
+
           deposit_id=$(get_deposit_id_for_repo "$(get_account_deposits)")
 
           if [[ ! $deposit_id ]]; then
-            echo "No deposit found for GitHub repository ${{ github.repository }}."
+            echo "No deposit found for GitHub repository '${{ github.repository }}.'"
+            echo $(read_zenodo_json ".zenodo.json") 
             # exit 1
           fi
+
+
+
+
