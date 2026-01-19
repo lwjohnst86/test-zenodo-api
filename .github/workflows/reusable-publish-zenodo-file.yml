@@ -29,6 +29,8 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       
       - name: Testing API
+        env:
+          REPO_URL: "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
         run: |
           if [[ -z "${{ secrets.zenodo-token }}" ]]; then
             echo "Zenodo token is not set."
@@ -42,5 +44,5 @@ jobs:
           fi
 
           echo $ZENODO_API_URL
-          echo "https://github.com/${{ github.repository }}"
+          echo "${REPO_URL}"
 

@@ -1,4 +1,4 @@
-name: Release project
+name: Publish file to Zenodo
 
 on:
   push:
@@ -13,6 +13,6 @@ jobs:
     # uses: ./.github/workflows/reusable-publish-zenodo-file.yml@main
     uses: ./.github/workflows/reusable-publish-zenodo-file.yml
     with:
-      use_sandbox: false
+      use_sandbox: true
     secrets:
       zenodo-token: ${{ secrets.ZENODO_SANDBOX_TOKEN }}
