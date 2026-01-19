@@ -79,7 +79,7 @@ jobs:
           }
 
           # Args: 1. Deposit JSON
-          get_new_deposit_file_url() {
+          get_deposit_file_url() {
             jq -r '.links.files' <<< "$1"
           }
 
@@ -145,7 +145,7 @@ jobs:
               "${ZENODO_API_URL}/${deposit_id}/files"
           }
 
-          get_deposit_file_urls() {
+          get_deposit_file_id_urls() {
             local deposit_json=$1
             jq -r '.[].links.self' <<< "$deposit_json"
           }
@@ -188,7 +188,7 @@ jobs:
             draft_deposit=$(create_new_deposit "$metadata")
 
             # Upload file to the new deposit
-            file_url=$(get_new_deposit_file_url "$draft_deposit")
+            file_url=$(get_deposit_file_url "$draft_deposit")
             uploaded_file=$(upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}")
 
             # Publish the new deposit
@@ -207,7 +207,7 @@ jobs:
 
             # Update existing deposit's file(s) by deleting and re-uploading
             file_list_json=$(get_deposit_files "$deposit_id")
-            file_list=$(get_deposit_file_urls "$file_list_json")
+            file_list=$(get_deposit_file_id_urls "$file_list_json")
             echo $file_list
             deleted_files=$(
               for file in file_list; do
