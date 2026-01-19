@@ -46,6 +46,7 @@ jobs:
           # Functions
           get_account_deposits() {
             curl \
+              --silent \
               --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
               $ZENODO_API_URL
           }
@@ -57,6 +58,9 @@ jobs:
               <<< "$1"
           }
 
-          account_deposits=$(get_account_deposits)
-          echo $(get_deposit_id_for_repo "$account_deposits")
+          deposit_id=$(get_deposit_id_for_repo "$(get_account_deposits)")
 
+          if [[ ! $deposit_id ]]; then
+            echo "No deposit found for GitHub repository ${{ github.repository }}."
+            # exit 1
+          fi
