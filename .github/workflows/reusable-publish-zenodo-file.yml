@@ -30,7 +30,7 @@ jobs:
       
       - name: Testing API
         env:
-          REPO_URL: "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
         run: |
           if [[ -z "${{ secrets.zenodo-token }}" ]]; then
             echo "Zenodo token is not set."
@@ -43,6 +43,15 @@ jobs:
             ZENODO_API_URL="https://zenodo.org/api/deposit/depositions"
           fi
 
+          # Functions
+
+          get_deposits() {
+            curl \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              "$ZENODO_API_URL"
+          }
+
           echo $ZENODO_API_URL
           echo "${REPO_URL}"
+          echo $(get_deposits)
 
