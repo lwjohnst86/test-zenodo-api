@@ -125,15 +125,12 @@ jobs:
 
           if [[ ! $deposit_id ]]; then
             echo "INFO: No deposit found for GitHub repository '${{ github.repository }}'. Creating a new deposit."
-            # metadata=$(read_zenodo_json "$ZENODO_FILE") 
-            draft_deposit=$(create_new_deposit \
-              $(read_zenodo_json "$ZENODO_FILE"))
-            # file_url=$(get_deposit_file_url "$draft_deposit")
-            upload_file_to_deposit \
-              $(get_deposit_file_url "$draft_deposit") \
-              "${{ inputs.upload-file-path }}"
-            # new_deposit_id=$(get_deposit_id "$draft_deposit")
-            publish_deposit "$(get_deposit_id $draft_deposit)"
+            metadata=$(read_zenodo_json "$ZENODO_FILE") 
+            draft_deposit=$(create_new_deposit "$metadata")
+            file_url=$(get_deposit_file_url "$draft_deposit")
+            upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}"
+            new_deposit_id=$(get_deposit_id "$draft_deposit")
+            publish_deposit "$new_deposit_id"
             deposit_html=$(get_deposit_html "$draft_deposit")
             echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
           elif [[ $(echo $deposit_id | wc -l) -ne 1 ]]; then
