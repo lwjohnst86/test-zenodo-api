@@ -1,0 +1,17 @@
+name: Release project
+
+on:
+  push:
+    branches:
+      - main
+
+# Limit token permissions for security
+permissions: read-all
+
+jobs:
+  publish-zenodo:
+    uses: .github/workflows/reusable-publish-zenodo-file.yml@main
+    with:
+      use_sandbox: true
+    secrets:
+      zenodo-token: ${{ secrets.ZENODO_SANDBOX_TOKEN }}
