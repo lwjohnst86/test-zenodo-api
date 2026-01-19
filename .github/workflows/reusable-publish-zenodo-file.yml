@@ -156,6 +156,7 @@ jobs:
           jq --arg repo "${{ github.repository }}" '.[] | select(.metadata.related_identifiers[]?.identifier | contains($repo))' <<< "$account_deposits"
           deposit_id=$(get_deposit_id_for_repo "$account_deposits")
           echo "$deposit_id"
+          exit 0
 
           if [[ ! $deposit_id ]]; then
             echo "INFO: No deposit found for GitHub repository '${{ github.repository }}'. Creating a new deposit."
