@@ -58,5 +58,6 @@ jobs:
           }
 
           account_deposits=$(get_account_deposits)
+          echo $account_deposits
           echo $(get_deposit_id_for_repo $account_deposits)
 
