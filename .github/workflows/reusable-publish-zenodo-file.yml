@@ -114,6 +114,34 @@ jobs:
               "${ZENODO_API_URL}/${deposit_id}/actions/publish"
           }
 
+          edit_deposit() {
+            local deposit_id=$1
+            curl \
+              --silent \
+              --request POST \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              --header 'Content-Type: application/json'  \
+              "${ZENODO_API_URL}/${deposit_id}/actions/edit"
+          }
+
+          get_deposit_files() {
+            local deposit_id=$1
+            curl \
+              --silent \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              "${ZENODO_API_URL}/${deposit_id}/files"
+          }
+
+          delete_deposit_file() {
+            local deposit_id=$1
+            local file_id=$2
+            curl \
+              --silent \
+              --request DELETE \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              "${ZENODO_API_URL}/${deposit_id}/files/${file_id}"
+          }
+
           # Steps
 
           if [[ ! -f "$ZENODO_FILE" ]]; then
@@ -130,9 +158,9 @@ jobs:
             file_url=$(get_deposit_file_url "$draft_deposit")
             upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}"
             new_deposit_id=$(get_deposit_id "$draft_deposit")
-            # new_deposit=$(publish_deposit "$new_deposit_id")
-            # deposit_html=$(get_deposit_html "$new_deposit")
-            #echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
+            new_deposit=$(publish_deposit "$new_deposit_id")
+            deposit_html=$(get_deposit_html "$new_deposit")
+            echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
           elif [[ $(echo $deposit_id | wc -l) -ne 1 ]]; then
             echo "ERROR: More than one deposit is found for the repository ${{ github.repository }}. One might be a draft. Please delete any duplicates."
           elif [[ $(echo $deposit_id | wc -l) -eq 1 ]]; then
