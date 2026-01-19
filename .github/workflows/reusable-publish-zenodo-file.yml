@@ -101,7 +101,7 @@ jobs:
 
           get_deposit_html() {
             local deposit_json=$1
-            jq -r '.links.html' <<< "$deposit_json"
+            jq -r '.[].links.html' <<< "$deposit_json"
           }
 
           publish_deposit() {
