@@ -101,7 +101,7 @@ jobs:
 
           get_deposit_html() {
             local deposit_json=$1
-            jq -r '.[].links.html' <<< "$deposit_json"
+            jq -r '.links.html' <<< "$deposit_json"
           }
 
           publish_deposit() {
@@ -156,7 +156,7 @@ jobs:
             metadata=$(read_zenodo_json "$ZENODO_FILE") 
             draft_deposit=$(create_new_deposit "$metadata")
             file_url=$(get_deposit_file_url "$draft_deposit")
-            upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}"
+            uploaded_file=$(upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}")
             new_deposit_id=$(get_deposit_id "$draft_deposit")
             new_deposit=$(publish_deposit "$new_deposit_id")
             deposit_html=$(get_deposit_html "$new_deposit")
