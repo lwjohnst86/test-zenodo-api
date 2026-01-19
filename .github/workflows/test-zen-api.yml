@@ -10,7 +10,8 @@ permissions: read-all
 
 jobs:
   publish-zenodo:
-    uses: ./.github/workflows/reusable-publish-zenodo-file.yml@main
+    # uses: ./.github/workflows/reusable-publish-zenodo-file.yml@main
+    uses: ./.github/workflows/reusable-publish-zenodo-file.yml
     with:
       use_sandbox: true
     secrets:
