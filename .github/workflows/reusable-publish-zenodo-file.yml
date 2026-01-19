@@ -151,7 +151,7 @@ jobs:
           fi
 
           account_deposits=$(get_account_deposits)
-          echo $(jq '.' <<< "$account_deposits")
+          jq '.[].metadata' <<< "$account_deposits"
           deposit_id=$(get_deposit_id_for_repo "$account_deposits")
           echo "$deposit_id"
           exit 0
