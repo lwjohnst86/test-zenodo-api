@@ -1,0 +1,38 @@
+{
+  "creators": [
+    {
+      "name": "Beicher, Kristiane",
+      "affiliation": "Steno Diabetes Center Aarhus",
+      "orcid": "0000-0001-7556-9566"
+    },
+    {
+      "name": "Ibsen, Daniel",
+      "affiliation": "Steno Diabetes Center Aarhus",
+      "orcid": "0000-0002-7038-4770"
+    },
+    {
+      "name": "Johnston, Luke",
+      "affiliation": "Steno Diabetes Center Aarhus",
+      "orcid": "0000-0003-4169-2616"
+    }
+  ],
+  "title": "Data management plan for the ON LiMiT dietary intervention study",
+  "description": "ON LiMiT (Optimal Non-pharmacological Lifestyle Modifications in people with Type 2 diabetes) is a large Danish intervention study investigating the maintenance of remission of type 2 diabetes through weight loss, diet, and exercise. The project runs from 2025 to 2030 and will involve 1,500 participants with type 2 diabetes. This contains the data management plan for the study.",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/onlimit-study/dmp",
+      "relation": "isIdenticalTo",
+      "resource_type": "other"
+    }
+  ],
+  "keywords": [
+    "dietary intervention",
+    "data management plan",
+    "data management"
+  ],
+  "license": "cc-by-4.0",
+  "upload_type": "publication",
+  "publication_type": "other",
+  "language": "eng"
+}
