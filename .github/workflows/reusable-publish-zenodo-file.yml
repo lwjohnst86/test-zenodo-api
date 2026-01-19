@@ -99,6 +99,7 @@ jobs:
             jq -r '.id' <<< "$1"
           }
 
+          # Not give an array. Only one deposit.
           get_deposit_html() {
             local deposit_json=$1
             jq -r '.links.html' <<< "$deposit_json"
@@ -165,5 +166,9 @@ jobs:
             echo "ERROR: More than one deposit is found for the repository ${{ github.repository }}. One might be a draft. Please delete any duplicates."
           elif [[ $(echo $deposit_id | wc -l) -eq 1 ]]; then
             echo "INFO: Deposit found for GitHub repository '${{ github.repository }}' with deposit ID '$deposit_id'. Updating existing deposit."
+            edit_response=$(edit_deposit "$deposit_id")
+            echo ${edit_response}
+            file_list=$(get_deposit_files "$deposit_id")
+            echo ${file_list}
           fi
 
