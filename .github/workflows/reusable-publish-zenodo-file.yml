@@ -33,7 +33,7 @@ jobs:
           REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
         run: |
           if [[ -z "${{ secrets.zenodo-token }}" ]]; then
-            echo "Zenodo token is not set."
+            echo "Zenodo token is not set. You need to add a token as a secret to be able to interact with Zenodo."
             exit 1
           fi
 
@@ -45,13 +45,11 @@ jobs:
 
           # Functions
 
-          get_deposits() {
+          get_account_deposits() {
             curl \
               --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
-              "$ZENODO_API_URL"
+              $ZENODO_API_URL
           }
 
-          echo $ZENODO_API_URL
-          echo "${REPO_URL}"
-          echo $(get_deposits)
+          echo $(get_account_deposits)
 
