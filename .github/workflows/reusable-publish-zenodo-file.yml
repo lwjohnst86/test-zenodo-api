@@ -7,6 +7,9 @@ on:
         required: true
         type: "boolean"
         default: true
+      upload-file-path:
+        required: true
+        type: "string"
     secrets:
       # Can be either for Sandbox or Public Zenodo
       zenodo-token:
@@ -31,6 +34,7 @@ jobs:
       - name: Testing API
         env:
           REPO_URL: "${{ github.server_url }}/${{ github.repository }}"
+          ZENODO_FILE: ".zenodo.json"
         run: |
           if [[ -z "${{ secrets.zenodo-token }}" ]]; then
             echo "Zenodo token is not set. You need to add a token as a secret to be able to interact with Zenodo."
@@ -58,23 +62,61 @@ jobs:
               <<< "$1"
           }
 
+          # TODO: Need to also include version/tag here?
           read_zenodo_json() {
             echo "{\"metadata\": $(cat $1 | jq -c)}"
           }
 
-          if [[ ! -f ".zenodo.json" ]]; then
-            echo "The repository doesn't have a '.zenodo.json'. To publish to Zenodo, it needs one."
-            # exit 1
+          # Args: 1. Metadata from '.zenodo.json'
+          create_new_deposit() {
+            curl \
+              --silent \
+              --request POST \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              --header 'Content-Type: application/json'  \
+              --data "$1" \
+              $ZENODO_API_URL
+          }
+
+          # Args: 1. Deposit JSON
+          get_deposit_file_url() {
+            jq -r '.links.files' <<< "$1"
+          }
+
+          upload_file_to_deposit() {
+            local zen_api_file_url=$1
+            local file_path=$2
+            curl \
+              --silent \
+              --header "Authorization: Bearer ${{ secrets.zenodo-token }}" \
+              -F name="${file_path}" \
+              -F file=@${file_path} \
+              "$zen_api_file_url"
+          }
+
+          # Args: 1. Deposit JSON
+          get_deposit_id() {
+            jq -r '.id' <<< "$1"
+          }
+
+          # Steps
+
+          if [[ ! -f "$ZENODO_FILE" ]]; then
+            echo "ERROR: The repository doesn't have a '$ZENODO_FILE'. To publish to Zenodo, it needs one."
+            exit 1
           fi
 
           deposit_id=$(get_deposit_id_for_repo "$(get_account_deposits)")
 
           if [[ ! $deposit_id ]]; then
-            echo "No deposit found for GitHub repository '${{ github.repository }}.'"
-            echo $(read_zenodo_json ".zenodo.json") 
-            # exit 1
+            echo "INFO: No deposit found for GitHub repository '${{ github.repository }}'. Creating a new deposit."
+            metadata=$(read_zenodo_json "$ZENODO_FILE") 
+            draft_deposit=$(create_new_deposit "$metadata")
+            file_url=$(get_deposit_file_url "$draft_deposit")
+            echo $file_url
+            upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}"
+            echo $(get_deposit_id "$deposit_json")
+          else
+            echo "INFO: Deposit found for GitHub repository '${{ github.repository }}' with deposit ID '$deposit_id'. Updating existing deposit."
           fi
-
-
-
 

@@ -14,5 +14,6 @@ jobs:
     uses: ./.github/workflows/reusable-publish-zenodo-file.yml
     with:
       use_sandbox: true
+      upload-file-path: "dmp.pdf"
     secrets:
       zenodo-token: ${{ secrets.ZENODO_SANDBOX_TOKEN }}
