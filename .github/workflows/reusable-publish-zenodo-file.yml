@@ -208,22 +208,16 @@ jobs:
             # Update existing deposit's file(s) by deleting and re-uploading
             file_list_json=$(get_deposit_files "$deposit_id")
             file_list=$(get_deposit_file_id_urls "$file_list_json")
-            deleted_files=$(
-              for file in file_list; do
-                delete_deposit_file "$deposit_id" "$file"
-              done
-            )
-            get_deposit_file_id_urls "$file_list_json"
+            for file in file_list; do
+              delete_deposit_file "$deposit_id" "$file"
+            done
+            echo $(get_deposit_file_id_urls "$file_list_json")
             file_url=$(get_deposit_file_url "$edit_response")
-            echo $file_url
             uploaded_file=$(upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}")
-            echo $uploaded_file
 
             # Publish new version of the deposit
             newversion_deposit=$(publish_newversion_deposit "$deposit_id")
-            echo $newversion_deposit
             deposit_html=$(get_deposit_html "$newversion_deposit")
-            echo $deposit_html
             echo "INFO: Published new deposit to Zenodo with ID '$deposit_html'".
           elif [[ $(echo $deposit_id | wc -l) -ne 1 ]]; then
             echo "ERROR: More than one deposit is found for the repository ${{ github.repository }}. One might be a draft. Please delete any duplicates."
