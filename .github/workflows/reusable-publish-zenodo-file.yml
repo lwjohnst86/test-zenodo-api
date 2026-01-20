@@ -208,12 +208,12 @@ jobs:
             # Update existing deposit's file(s) by deleting and re-uploading
             file_list_json=$(get_deposit_files "$deposit_id")
             file_list=$(get_deposit_file_id_urls "$file_list_json")
-            echo $file_list
             deleted_files=$(
               for file in file_list; do
-                delete_deposit_file "$deposit_id" "$file_id"
+                delete_deposit_file "$deposit_id" "$file"
               done
             )
+            get_deposit_file_id_urls "$file_list_json"
             file_url=$(get_deposit_file_url "$edit_response")
             echo $file_url
             uploaded_file=$(upload_file_to_deposit "$file_url" "${{ inputs.upload-file-path }}")
